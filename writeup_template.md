@@ -18,10 +18,13 @@ The goals / steps of this project are the following:
 
 [image1]: ./figures/calibration.png "Undistorted"
 [image2]: ./figures/test_image.png "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
+[image3]: ./figures/masked.png "Region of Interest"
+[image4]: ./figures/c_binary.png "Binary_1"
+[image5]: ./figures/grad.png "Binary_2"
+[image6]: ./figures/warped.png "Warped"
+[image7]: ./figures/histogram.png "Histogram"
+[image8]: ./figures/find_lane_line.png "Finding Lines"
+[image9]: ./figures/warped.png "Warped"
 [video1]: ./project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -30,7 +33,7 @@ The goals / steps of this project are the following:
 ---
 
 ### Camera Calibration 
-##### Cell Title : Compute the camera calibration matrix and distortion coefficients' in Advanced-Lane-Lines.ipynb
+##### (Placed in the cell with the title of 'Compute the camera calibration matrix and distortion coefficients' in Advanced-Lane-Lines.ipynb
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection using the `cv2.findChessboardCorners()` function.  
 
@@ -40,50 +43,64 @@ I then used the output `objpoints` and `imgpoints` to compute the **camera calib
 
 ### Pipeline (Single images)
 
+1) Load camera calibration matrix and distortion coefficients  
+2) **Undistort**  
+3) **Binarize** with some thresholds  
+4) **Warp** binarized image to bird-eye view  
+5) **Find lane lines** and **fitting** 
+6) **Update** the instances  
+7) **Calculate** radius of curvature and distance from lane center
+
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+![alt text][image2] 
 
-####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+##### Binary Image of Lane Lines
 
-I used a combination of color and gradient thresholds to generate a binary image.  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image.
 
-![alt text][image3]
+Here's an example of my output for this step.
 
-####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+![alt text][image4]
+![alt text][image5]
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+After combining two images above by logical-OR operation, I wiped out unnecessary pixels from the image using `mask_image` function.
 
+##### Perspective Transform
+
+The code for my perspective transform includes a function called `warp_image()`, which appears in lines 1 through 8 in the cell with the title of 'Perspective Transform' in `Advanced-Lane-Lines.ipynb`.  The `warp_image()` function takes as inputs an image (`image`), as well as source points (`src`) and enable/disable inverse transform (`inv`).  I chose the fixed points as the source and destination points in the following manner:
+
+Source Point
 ```
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+h, w = warp_in.shape[0], warp_in.shape[1]
 
+src_LB = [200   , 700     ]   # Left-Bottom
+src_LT = [w*0.44, h*0.65  ]  # Left-Top
+src_RT = [w*0.557, h*0.65 ]  # Right-Top
+src_RB = [1100  , 700     ]   # Right-Bottom
+src = np.float32([src_LB, src_LT, src_RT, src_RB])
 ```
-This resulted in the following source and destination points:
+Destination Point
+```
+offset = 100
+dst_LB = [src[0][0]+offset, shape[0]]  # Left-Bottom
+dst_LT = [src[0][0]+offset, 0       ]  # Left-Top
+dst_RT = [src[3][0]-offset, 0       ]  # Right-Top
+dst_RB = [src[3][0]-offset, shape[0]]  # Right-Bottom
+dst = np.float32([dst_LB, dst_LT, dst_RT, dst_RB])
+```
 
-| Source        | Destination   | 
-|:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
-
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+The following shows the result of `warp_image` function : 
 
 ![alt text][image4]
 
-####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+##### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+1) Find starting position
+At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of it as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
+![alt text][image7]
 
-![alt text][image5]
+2) Slide windows and get indices of lane lines  
+
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
