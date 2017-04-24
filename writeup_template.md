@@ -24,7 +24,9 @@ The goals / steps of this project are the following:
 [image6]: ./figures/warped.png "Warped"
 [image7]: ./figures/histogram.png "Histogram"
 [image8]: ./figures/find_lane_line.png "Finding Lines"
-[image9]: ./figures/warped.png "Warped"
+[image9]: ./figures/fitted_lines.png "Fitted Lines"
+[image10]: ./figures/detected_lane.png "Detected Lane"
+[image11]: ./figures/radiusCurvature.png "Formular for Radius of Curvature"
 [video1]: ./project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -66,8 +68,9 @@ Here's an example of my output for this step.
 After combining two images above by logical-OR operation, I wiped out unnecessary pixels from the image using `mask_image` function.
 
 ##### Perspective Transform
+: in the **'Perspective Transform'** cell in `Advanced-Lane-Lines.ipynb`.
 
-The code for my perspective transform includes a function called `warp_image()`, which appears in lines 1 through 8 in the cell with the title of 'Perspective Transform' in `Advanced-Lane-Lines.ipynb`.  The `warp_image()` function takes as inputs an image (`image`), as well as source points (`src`) and enable/disable inverse transform (`inv`).  I chose the fixed points as the source and destination points in the following manner:
+The code for my perspective transform includes a function called `warp_image()`. The function takes as inputs an image (`image`), as well as source points (`src`) and enable/disable inverse transform (`inv`).  I chose the fixed points as the source and destination points in the following manner:
 
 Source Point
 ```
@@ -94,12 +97,19 @@ The following shows the result of `warp_image` function :
 ![alt text][image4]
 
 ##### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
+: in the **'Sliding Windows and Fitting a Polynomial'** cell in `Advanced-Lane-Lines.ipynb`.
 
-1) Find starting position
-At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of it as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
+1) Finding start position
+At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of the histogram as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
 ![alt text][image7]
 
-2) Slide windows and get indices of lane lines  
+2) Sliding windows and get indices of lane lines  
+The window its size is defined by `nwindows` and `margin` moves and searches every indices of non-zero pixels in warped binary image. 
+![alt text][image8]
+
+The `find_lines()` function performs two processes above. Its results are used for fitting a polynomial.
+
+##### 
 
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
