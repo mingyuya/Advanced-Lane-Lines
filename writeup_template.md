@@ -57,7 +57,7 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 ![alt text][image2] 
 
-##### Binary Image of Lane Lines
+#### Binary Image of Lane Lines
 
 I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image.
 
@@ -70,7 +70,7 @@ After combining two images above by logical-OR operation, I wiped out unnecessar
 
 All the steps described above are coded in `detect_edge()` function.
 
-##### Perspective Transform
+#### Perspective Transform
 : in the **'Perspective Transform'** cell in `Advanced-Lane-Lines.ipynb`.
 
 The code for my perspective transform includes a function called `warp_image()`. The function takes as inputs an image (`image`), as well as source points (`src`) and enable/disable inverse transform (`inv`).  I chose the fixed points as the source and destination points in the following manner:
@@ -97,9 +97,9 @@ dst = np.float32([dst_LB, dst_LT, dst_RT, dst_RB])
 
 The following shows the result of `warp_image` function : 
 
-![alt text][image4]
+![alt text][image6]
 
-##### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
+#### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
 : in the **'Sliding Windows and Fitting a Polynomial'** cell in `Advanced-Lane-Lines.ipynb`.
 
 1) Finding start position
@@ -116,11 +116,13 @@ The `find_lines()` function performs two processes above. Its results are used f
 
 ![alt text][image9]
 
-##### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
+#### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
 
 Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :     
 
-![alt text][image10]  
+<blockquote>
+  <p>`text(Radius of curvature)=([1+((dy)/(dx))^2]^(3//2))/(|(d^2y)/(dx^2)|)`</p>
+</blockquote>
 
 The code for the formular is 
 ```
@@ -138,7 +140,7 @@ right_curverad = ((1 + (2*right_fit_m[0]*y_eval + right_fit_m[1])**2)**1.5) / np
 
 This part of code is also appears in in the `Test 'find_lines' function` cell.
 
-##### Projection of found lane onto the input image
+#### Projection of found lane onto the input image
 
 I implemented this step in the `draw_lane()` function. The function requires the following as its input parameters :  
 * Original image to be drawn  
@@ -158,7 +160,7 @@ Here are **the sequence of processing those inputs** and **its result** :
 
 ### Pipeline for Processing Video
 
-All the processing stages mentioned above were merged to the `process_image()` function. The function not only redrawn image, but also calculates the characteristics of the lane appears in each frame and stores it to `Line` class. 
+All the processing stages mentioned above were merged to the `process_image()` function. The function not only redrawn image, but also calculates the characteristics of the lane appears in each frame and stores it to `Line` class. For the radius of curvature, I used the mean of coefficients for left and right lane lines.
 
 Here's a [link to my video result](./result_project_video.mp4)
 
