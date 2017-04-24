@@ -25,9 +25,9 @@ The goals / steps of this project are the following:
 [image7]: ./figures/histogram.png "Histogram"
 [image8]: ./figures/find_lane_line.png "Finding Lines"
 [image9]: ./figures/fitted_lines.png "Fitted Lines"
-[image10]: ./figures/detected_lane.png "Detected Lane"
-[image11]: ./figures/radiusCurvature.png "Formular for Radius of Curvature"
-[video1]: ./project_video.mp4 "Video"
+[image10]: ./figures/radiusCurvature.png "Formular for Radius of Curvature"
+[image11]: ./figures/detected_lane.png "Detected Lane"
+[video1]: ./result_project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -53,7 +53,8 @@ I then used the output `objpoints` and `imgpoints` to compute the **camera calib
 6) **Update** the instances  
 7) **Calculate** radius of curvature and distance from lane center
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
+To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one :  
+
 ![alt text][image2] 
 
 ##### Binary Image of Lane Lines
@@ -65,7 +66,9 @@ Here's an example of my output for this step.
 ![alt text][image4]
 ![alt text][image5]
 
-After combining two images above by logical-OR operation, I wiped out unnecessary pixels from the image using `mask_image` function.
+After combining two images above by logical-OR operation, I wiped out unnecessary pixels from the image using `mask_image()` function.
+
+All the steps described above are coded in `detect_edge()` function.
 
 ##### Perspective Transform
 : in the **'Perspective Transform'** cell in `Advanced-Lane-Lines.ipynb`.
@@ -101,40 +104,67 @@ The following shows the result of `warp_image` function :
 
 1) Finding start position
 At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of the histogram as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
+
 ![alt text][image7]
 
 2) Sliding windows and get indices of lane lines  
-The window its size is defined by `nwindows` and `margin` moves and searches every indices of non-zero pixels in warped binary image. 
+The window its size is defined by `nwindows` and `margin` moves and searches every indices of non-zero pixels in warped binary image.  
+
 ![alt text][image8]
 
-The `find_lines()` function performs two processes above. Its results are used for fitting a polynomial.
+The `find_lines()` function performs two processes above. Its results are used for fitting 2nd order polynomials to each lane line. The fitting procedure appears in the `Test 'find_lines' function` cell. Here is its result :  
 
-##### 
+![alt text][image9]
 
+##### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
 
-####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :     
 
-I did this in lines # through # in my code in `my_other_file.py`
+![alt text][image10]  
 
-####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+The code for the formular is 
+```
+ym_per_pix = 30/720 # meters per pixel in y dimension
+xm_per_pix = 3.7/800 # meters per pixel in x dimension
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+# leftx, lefty, rightx, righty are the result of find_lines() function
+left_fit_m = np.polyfit(lefty*ym_per_pix, leftx*xm_per_pix, 2)
+right_fit_m = np.polyfit(righty*ym_per_pix, rightx*xm_per_pix, 2)
 
-![alt text][image6]
+y_eval = np.max(yvals)*ym_per_pix
+left_curverad = ((1 + (2*left_fit_m[0]*y_eval + left_fit_m[1])**2)**1.5) / np.absolute(2*left_fit_m[0])
+right_curverad = ((1 + (2*right_fit_m[0]*y_eval + right_fit_m[1])**2)**1.5) / np.absolute(2*right_fit_m[0])
+```
+
+This part of code is also appears in in the `Test 'find_lines' function` cell.
+
+##### Projection of found lane onto the input image
+
+I implemented this step in the `draw_lane()` function. The function requires the following as its input parameters :  
+* Original image to be drawn  
+* Source points of warped image  
+* Positions of fitted lines  
+* The radius of curvature  
+* The distance between the vehicle and the centor of lane  
+
+Here are **the sequence of processing those inputs** and **its result** :
+1) Drawing the polygon indicating the lane  
+2) Dewarping the found lane  
+3) Projection of step 2 onto the original image + Writing the radius and the distance
+
+![alt text][image11]
 
 ---
 
-###Pipeline (video)
+### Pipeline for Processing Video
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+All the processing stages mentioned above were merged to the `process_image()` function. The function not only redrawn image, but also calculates the characteristics of the lane appears in each frame and stores it to `Line` class. 
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./result_project_video.mp4)
 
 ---
 
-###Discussion
+### Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+I'll add some pipelines to ignore black lines appears in `challenge_video.mp4`. Because it doesn't have any information about the direction that vehicle has to be ahead and makes unwanted edges
 
