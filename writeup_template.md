@@ -43,6 +43,8 @@ I then used the output `objpoints` and `imgpoints` to compute the **camera calib
 
 ![alt text][image1]
 
+---
+
 ### Pipeline (Single images)
 
 1) Load camera calibration matrix and distortion coefficients  
