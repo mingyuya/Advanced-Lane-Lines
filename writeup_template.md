@@ -104,7 +104,7 @@ The following shows the result of `warp_image` function :
 #### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
 : in the **'Sliding Windows and Fitting a Polynomial'** cell in `Advanced-Lane-Lines.ipynb`.
 
-1) Finding start position
+1) Finding start position  
 At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of the histogram as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
 
 ![alt text][image7]
