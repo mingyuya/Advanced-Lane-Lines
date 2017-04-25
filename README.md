@@ -61,7 +61,7 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 #### Binary Image of Lane Lines
 
-I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image.
+I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image. All the threshold levels were chosen after a lot of experients.
 
 Here's an example of my output for this step.  
 ![alt text][image4]  
