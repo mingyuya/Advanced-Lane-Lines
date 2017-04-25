@@ -54,8 +54,8 @@ I then used the output `objpoints` and `imgpoints` to compute the **camera calib
 6) **Update** the instances  
 7) **Calculate** radius of curvature and distance from lane center
 
+#### Test Image
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one :  
-
 ![alt text][image2] 
 
 #### Binary Image of Lane Lines
