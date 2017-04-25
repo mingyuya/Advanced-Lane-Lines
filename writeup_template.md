@@ -62,9 +62,9 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image.
 
-Here's an example of my output for this step.
-![alt text][image4]
-![alt text][image5]
+Here's an example of my output for this step.  
+![alt text][image4]  
+![alt text][image5]  
 
 After combining two images above by logical-OR operation, I wiped out unnecessary pixels from the image using `mask_image()` function.
 
@@ -114,8 +114,9 @@ The `find_lines()` function performs two processes above. Its results are used f
 
 #### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
 
-Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :     
-![alt text][image10] 
+Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :    
+   
+![alt text][image10]   
 
 The code for the formular is 
 ```
