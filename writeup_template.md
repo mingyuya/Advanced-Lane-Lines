@@ -25,7 +25,7 @@ The goals / steps of this project are the following:
 [image7]: ./figures/histogram.png "Histogram"
 [image8]: ./figures/find_lane_line.png "Finding Lines"
 [image9]: ./figures/fitted_lines.png "Fitted Lines"
-[image10]: ./figures/radiusCurvature.png "Formular for Radius of Curvature"
+[image10]: ./figures/radiusCurvature.gif "Formular for Radius of Curvature"
 [image11]: ./figures/detected_lane.png "Detected Lane"
 [video1]: ./result_project_video.mp4 "Video"
 
