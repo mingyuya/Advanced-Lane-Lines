@@ -63,7 +63,6 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 I used a combination of L-channel, S-channel and color and gradient thresholds to generate a binary image. Most of cases, it is easy to pick lane lines from an image by using combination of those specific color channels. In the other hand, using gradient shows better result, if there are shaded area or variation of background color in an image.
 
 Here's an example of my output for this step.
-
 ![alt text][image4]
 ![alt text][image5]
 
@@ -97,7 +96,6 @@ dst = np.float32([dst_LB, dst_LT, dst_RT, dst_RB])
 ```
 
 The following shows the result of `warp_image` function : 
-
 ![alt text][image6]
 
 #### Identifying lane-line pixels and Fitting their positions with a 2nd order polynomial
@@ -105,22 +103,18 @@ The following shows the result of `warp_image` function :
 
 1) Finding start position  
 At first, I get the histogram of the binary warped image along x-axis. After that, I chose the indices of two maximum value of the histogram as starting position, `leftx_base` and `rightx_base`. Here is the histogram of test image :  
-
 ![alt text][image7]
 
 2) Sliding windows and get indices of lane lines  
 The window its size is defined by `nwindows` and `margin` moves and searches every indices of non-zero pixels in warped binary image.  
-
 ![alt text][image8]
 
 The `find_lines()` function performs two processes above. Its results are used for fitting 2nd order polynomials to each lane line. The fitting procedure appears in the `Test 'find_lines' function` cell. Here is its result :  
-
 ![alt text][image9]
 
 #### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
 
 Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :     
-
 ![alt text][image10] 
 
 The code for the formular is 
@@ -151,8 +145,7 @@ I implemented this step in the `draw_lane()` function. The function requires the
 Here are **the sequence of processing those inputs** and **its result** :
 1) Drawing the polygon indicating the lane  
 2) Dewarping the found lane  
-3) Projection of step 2 onto the original image + Writing the radius and the distance
-
+3) Projection of step 2 onto the original image + Writing the radius and the distance   
 ![alt text][image11]
 
 ---
