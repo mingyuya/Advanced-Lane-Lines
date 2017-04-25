@@ -120,8 +120,8 @@ The `find_lines()` function performs two processes above. Its results are used f
 #### Calculate the radius of curvature of the lane and the position of the vehicle with respect to center
 
 Fisrt fo all, I assume that the test video, `project_video.mp4`, is in under the U.S. regulations so that, the length and width of the lane in the video were setted to 30m and 3.7 meter, separately. By using the assumption, it was possible to get the coefficients for  polynomials for each line in real-world scale. Finally, the radius of curvature was calculated by this formular :     
-![alt text][image10] 
 
+![alt text][image10] 
 
 The code for the formular is 
 ```
