@@ -162,5 +162,5 @@ Here's a [link to my video result](./result_project_video.mp4)
 
 ### Discussion
 
-I'll add some pipelines to ignore black lines appears in `challenge_video.mp4`. Because it doesn't have any information about the direction that vehicle has to be ahead and makes unwanted edges
+The binary image made by using gradient can generate unwanted lines which disturb finding the best polynomials. For example, strongly shaded area or black lines (appear in `challenge_video.mp4`) can be detected by my `detect_edge()` function. To make it robust, I think that I should consider classifying lane lines using colors (yellow and white).
 
